@@ -37,14 +37,14 @@ services:
       VITE_APP_NAME: ${VITE_APP_NAME:-solidtime}
       APP_ENV: ${APP_ENV:-production}
       APP_DEBUG: ${APP_DEBUG:-false}
-      APP_URL: ${APP_URL:?}
+      APP_URL: ${APP_URL:-https://time.pdevsecops.com}
       APP_FORCE_HTTPS: ${APP_FORCE_HTTPS:-true}
       TRUSTED_PROXIES: ${TRUSTED_PROXIES:-0.0.0.0/0,2000:0:0:0:0:0:0:0/3}
-      APP_KEY: ${APP_KEY:?}
+      APP_KEY: ${APP_KEY:-base64:4tdIQ7tzA7aA/rOBLwSkuTukJYVgUD87DjfuPimGytw=}
       # Authentication
-      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY:?}
-      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY:?}
-      SUPER_ADMINS: ${SUPER_ADMINS:?}
+      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY:-}
+      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY:-}
+      SUPER_ADMINS: ${SUPER_ADMINS:-}
       # Logging
       LOG_CHANNEL: ${LOG_CHANNEL:-stderr_daily}
       LOG_LEVEL: ${LOG_LEVEL:-debug}
@@ -61,7 +61,7 @@ services:
       MAIL_HOST: ${MAIL_HOST:-}
       MAIL_PORT: ${MAIL_PORT:-}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:?}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-no-reply@time.pdevsecops.com}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-solidtime}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
@@ -74,8 +74,6 @@ services:
       GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8000/health-check/up" ]
-    env_file:
-      - laravel.env
     depends_on:
       database:
         condition: service_healthy
@@ -110,8 +108,6 @@ services:
       GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
     healthcheck:
       test: [ "CMD", "healthcheck" ]
-    env_file:
-      - laravel.env
     depends_on:
       database:
         condition: service_healthy
@@ -147,8 +143,6 @@ services:
       GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
     healthcheck:
       test: [ "CMD", "healthcheck" ]
-    env_file:
-      - laravel.env
     depends_on:
       database:
         condition: service_healthy
