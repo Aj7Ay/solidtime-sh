@@ -28,6 +28,8 @@ services:
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
     networks:
       - internal
+    ports:
+      - "8000:8000"
     volumes:
       - "app-storage:/var/www/html/storage"
     environment:
