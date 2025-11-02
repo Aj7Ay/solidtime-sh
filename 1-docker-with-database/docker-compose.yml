@@ -3,8 +3,11 @@ services:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
     user: "1000:1000"
-    ports:
-      - '8000:8000'
+    # Coolify manages port mapping automatically - no ports mapping needed
+    # Coolify will detect port 8000 from the healthcheck or service configuration
+    # For local development, uncomment:
+    # ports:
+    #   - '8001:8000'
     networks:
       - internal
     volumes:
