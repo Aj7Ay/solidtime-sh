@@ -3,8 +3,12 @@ services:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
     user: "1000:1000"
-    ports:
-      - '${FORWARD_APP_PORT:-8001}:8000'
+    # Port mapping removed for Coolify - Coolify handles port mapping automatically
+    # If running locally, uncomment the line below:
+    # ports:
+    #   - '${FORWARD_APP_PORT:-8001}:8000'
+    expose:
+      - "8000"
     networks:
       - internal
     volumes:
