@@ -53,6 +53,8 @@ services:
       FILESYSTEM_DISK: ${FILESYSTEM_DISK}
       PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
       GOTENBERG_URL: ${GOTENBERG_URL}
+      AUTO_DB_MIGRATE: "true"
+      APP_ENABLE_REGISTRATION: "true"
     healthcheck:
       test: [ "CMD", "curl", "--fail", "--silent", "http://localhost:8000/health-check/up" ]
       interval: 10s
@@ -153,6 +155,8 @@ services:
       FILESYSTEM_DISK: ${FILESYSTEM_DISK}
       PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
       GOTENBERG_URL: ${GOTENBERG_URL}
+      APP_ENABLE_REGISTRATION: "true"
+      AUTO_DB_MIGRATE: "true
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
