@@ -106,6 +106,8 @@ services:
       FILESYSTEM_DISK: ${FILESYSTEM_DISK}
       PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
       GOTENBERG_URL: ${GOTENBERG_URL}
+      AUTO_DB_MIGRATE: "true"
+      APP_ENABLE_REGISTRATION: "true"
     command: ["php", "/var/www/html/artisan", "migrate", "--force"]
     restart: "no"
     depends_on:
@@ -209,6 +211,8 @@ services:
       FILESYSTEM_DISK: ${FILESYSTEM_DISK}
       PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
       GOTENBERG_URL: ${GOTENBERG_URL}
+      AUTO_DB_MIGRATE: "true"
+      APP_ENABLE_REGISTRATION: "true"
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
