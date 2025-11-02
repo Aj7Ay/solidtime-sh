@@ -3,6 +3,9 @@ services:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
     user: "1000:1000"
+    # Traefik labels for Coolify (if using Traefik-based setup)
+    labels:
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
     # Coolify manages port mapping automatically - no ports mapping needed
     # Coolify will detect port 8000 from the healthcheck or service configuration
     # For local development, uncomment:
