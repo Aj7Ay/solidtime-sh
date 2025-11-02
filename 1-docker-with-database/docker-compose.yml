@@ -1,161 +1,161 @@
 services:
-  init:
-    image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
-    networks:
-      - internal
-    volumes:
-      - "app-storage:/var/www/html/storage"
-    environment:
-      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
-      DB_HOST: ${DB_HOST:?database}
-      DB_PORT: ${DB_PORT:?5432}
-      DB_SSLMODE: ${DB_SSLMODE:-prefer}
-      DB_DATABASE: ${DB_DATABASE:?}
-      DB_USERNAME: ${DB_USERNAME:?}
-      DB_PASSWORD: ${DB_PASSWORD:?}
-    command: >
-      sh -c "
-        php artisan migrate --force &&
-        php artisan config:cache &&
-        php artisan route:cache
-      "
-    depends_on:
-      database:
-        condition: service_healthy
-    restart: "no"
   app:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
+    user: "1000:1000"
+    ports:
+      - '${FORWARD_APP_PORT:-8001}:8000'
     networks:
       - internal
     volumes:
       - "app-storage:/var/www/html/storage"
+      - "./logs:/var/www/html/storage/logs"
+      - "./app-storage:/var/www/html/storage/app"
     environment:
       CONTAINER_MODE: http
-      # Application
-      APP_NAME: ${APP_NAME:-solidtime}
-      VITE_APP_NAME: ${VITE_APP_NAME:-solidtime}
-      APP_ENV: ${APP_ENV:-production}
-      APP_DEBUG: ${APP_DEBUG:-false}
-      APP_URL: ${APP_URL:-https://time.pdevsecops.com}
-      APP_FORCE_HTTPS: ${APP_FORCE_HTTPS:-true}
-      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-0.0.0.0/0,2000:0:0:0:0:0:0:0/3}
-      APP_KEY: ${APP_KEY:-base64:4tdIQ7tzA7aA/rOBLwSkuTukJYVgUD87DjfuPimGytw=}
-      # Authentication
-      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY:-}
-      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY:-}
-      SUPER_ADMINS: ${SUPER_ADMINS:-}
-      # Logging
-      LOG_CHANNEL: ${LOG_CHANNEL:-stderr_daily}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-      # Database
-      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
-      DB_HOST: ${DB_HOST:?database}
-      DB_PORT: ${DB_PORT:?5432}
-      DB_SSLMODE: ${DB_SSLMODE:-require}
-      DB_DATABASE: ${DB_DATABASE:?}
-      DB_USERNAME: ${DB_USERNAME:?}
-      DB_PASSWORD: ${DB_PASSWORD:?}
-      # Mail
-      MAIL_MAILER: ${MAIL_MAILER:-smtp}
-      MAIL_HOST: ${MAIL_HOST:-}
-      MAIL_PORT: ${MAIL_PORT:-}
-      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-no-reply@time.pdevsecops.com}
-      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-solidtime}
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      # Queue
-      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
-      # File storage
-      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-local}
-      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK:-public}
-      # Services
-      GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
+      APP_NAME: ${APP_NAME}
+      VITE_APP_NAME: ${VITE_APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      APP_FORCE_HTTPS: ${APP_FORCE_HTTPS}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      APP_KEY: ${APP_KEY}
+      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY}
+      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY}
+      SUPER_ADMINS: ${SUPER_ADMINS}
+      LOG_CHANNEL: ${LOG_CHANNEL}
+      LOG_LEVEL: ${LOG_LEVEL}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_SSLMODE: ${DB_SSLMODE}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK}
+      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
+      GOTENBERG_URL: ${GOTENBERG_URL}
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8000/health-check/up" ]
     depends_on:
-      database:
-        condition: service_healthy
-      init:
-        condition: service_completed_successfully
+      - database
   scheduler:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
+    user: "1000:1000"
     networks:
       - internal
     volumes:
       - "app-storage:/var/www/html/storage"
+      - "./logs:/var/www/html/storage/logs"
+      - "./app-storage:/var/www/html/storage/app"
     environment:
       CONTAINER_MODE: scheduler
-      # Database
-      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
-      DB_HOST: ${DB_HOST:?database}
-      DB_PORT: ${DB_PORT:?5432}
-      DB_SSLMODE: ${DB_SSLMODE:-require}
-      DB_DATABASE: ${DB_DATABASE:?}
-      DB_USERNAME: ${DB_USERNAME:?}
-      DB_PASSWORD: ${DB_PASSWORD:?}
-      # Queue
-      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
-      # Logging
-      LOG_CHANNEL: ${LOG_CHANNEL:-stderr_daily}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-      # File storage
-      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-local}
-      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK:-public}
-      # Services
-      GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
+      APP_NAME: ${APP_NAME}
+      VITE_APP_NAME: ${VITE_APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      APP_FORCE_HTTPS: ${APP_FORCE_HTTPS}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      APP_KEY: ${APP_KEY}
+      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY}
+      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY}
+      SUPER_ADMINS: ${SUPER_ADMINS}
+      LOG_CHANNEL: ${LOG_CHANNEL}
+      LOG_LEVEL: ${LOG_LEVEL}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_SSLMODE: ${DB_SSLMODE}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK}
+      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
+      GOTENBERG_URL: ${GOTENBERG_URL}
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
-      database:
-        condition: service_healthy
-      init:
-        condition: service_completed_successfully
+      - database
   queue:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
+    user: "1000:1000"
     networks:
       - internal
     volumes:
       - "app-storage:/var/www/html/storage"
+      - "./logs:/var/www/html/storage/logs"
+      - "./app-storage:/var/www/html/storage/app"
     environment:
       CONTAINER_MODE: worker
       WORKER_COMMAND: "php /var/www/html/artisan queue:work"
-      # Database
-      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
-      DB_HOST: ${DB_HOST:?database}
-      DB_PORT: ${DB_PORT:?5432}
-      DB_SSLMODE: ${DB_SSLMODE:-require}
-      DB_DATABASE: ${DB_DATABASE:?}
-      DB_USERNAME: ${DB_USERNAME:?}
-      DB_PASSWORD: ${DB_PASSWORD:?}
-      # Queue
-      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
-      # Logging
-      LOG_CHANNEL: ${LOG_CHANNEL:-stderr_daily}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-      # File storage
-      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-local}
-      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK:-public}
-      # Services
-      GOTENBERG_URL: ${GOTENBERG_URL:-http://gotenberg:3000}
+      APP_NAME: ${APP_NAME}
+      VITE_APP_NAME: ${VITE_APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      APP_FORCE_HTTPS: ${APP_FORCE_HTTPS}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      APP_KEY: ${APP_KEY}
+      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY}
+      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY}
+      SUPER_ADMINS: ${SUPER_ADMINS}
+      LOG_CHANNEL: ${LOG_CHANNEL}
+      LOG_LEVEL: ${LOG_LEVEL}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_SSLMODE: ${DB_SSLMODE}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK}
+      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
+      GOTENBERG_URL: ${GOTENBERG_URL}
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
-      database:
-        condition: service_healthy
-      init:
-        condition: service_completed_successfully
+      - database
   database:
     restart: always
     image: 'postgres:15'
+#    ports:
+#      - '${FORWARD_DB_PORT:-5432}:5432'
     environment:
-      PGPASSWORD: '${DB_PASSWORD:?}'
-      POSTGRES_DB: '${DB_DATABASE:?}'
-      POSTGRES_USER: '${DB_USERNAME:?}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD:?}'
+      PGPASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
     volumes:
       - 'database-storage:/var/lib/postgresql/data'
     networks:
@@ -166,9 +166,9 @@ services:
         - pg_isready
         - '-q'
         - '-d'
-        - '${DB_DATABASE:?}'
+        - '${DB_DATABASE}'
         - '-U'
-        - '${DB_USERNAME:?}'
+        - '${DB_USERNAME}'
       retries: 3
       timeout: 5s
   gotenberg:
