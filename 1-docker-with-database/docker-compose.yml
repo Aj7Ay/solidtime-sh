@@ -50,7 +50,55 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8000/health-check/up" ]
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+  migrations:
+    image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
+    user: "1000:1000"
+    networks:
+      - internal
+    volumes:
+      - "app-storage:/var/www/html/storage"
+    environment:
+      APP_NAME: ${APP_NAME}
+      VITE_APP_NAME: ${VITE_APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      APP_FORCE_HTTPS: ${APP_FORCE_HTTPS}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      APP_KEY: ${APP_KEY}
+      PASSPORT_PRIVATE_KEY: ${PASSPORT_PRIVATE_KEY}
+      PASSPORT_PUBLIC_KEY: ${PASSPORT_PUBLIC_KEY}
+      SUPER_ADMINS: ${SUPER_ADMINS}
+      LOG_CHANNEL: ${LOG_CHANNEL}
+      LOG_LEVEL: ${LOG_LEVEL}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_SSLMODE: ${DB_SSLMODE}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK}
+      PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
+      GOTENBERG_URL: ${GOTENBERG_URL}
+    command: ["php", "/var/www/html/artisan", "migrate", "--force"]
+    restart: "no"
+    depends_on:
+      database:
+        condition: service_healthy
   scheduler:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
@@ -98,7 +146,10 @@ services:
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
   queue:
     restart: always
     image: "solidtime/solidtime:${SOLIDTIME_IMAGE_TAG:-latest}"
@@ -147,7 +198,10 @@ services:
     healthcheck:
       test: [ "CMD", "healthcheck" ]
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
   database:
     restart: always
     image: 'postgres:15'
