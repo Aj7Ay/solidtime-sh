@@ -48,7 +48,11 @@ services:
       PUBLIC_FILESYSTEM_DISK: ${PUBLIC_FILESYSTEM_DISK}
       GOTENBERG_URL: ${GOTENBERG_URL}
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:8000/health-check/up" ]
+      test: [ "CMD", "curl", "--fail", "--silent", "http://localhost:8000/health-check/up" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
       database:
         condition: service_healthy
